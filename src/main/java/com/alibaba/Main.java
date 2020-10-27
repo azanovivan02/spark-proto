@@ -1,28 +1,31 @@
 package com.alibaba;
 
 
+import com.alibaba.nodes.DoubleInputNode;
 import com.alibaba.nodes.SingleInputNode;
-import com.alibaba.ops.Count;
-import com.alibaba.ops.FirstNReduce;
-import com.alibaba.ops.LambdaMap;
-import com.alibaba.ops.Print;
-import com.alibaba.ops.Sort;
-import com.alibaba.ops.WordSplitMap;
+import com.alibaba.ops.DumbJoin;
+import com.alibaba.ops.single.Count;
+import com.alibaba.ops.single.FirstNReduce;
+import com.alibaba.ops.single.LambdaMap;
+import com.alibaba.ops.single.Print;
+import com.alibaba.ops.single.Sort;
+import com.alibaba.ops.single.WordSplitMap;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.alibaba.Utils.appendOperations;
 import static com.alibaba.Utils.chainOperations;
 import static com.alibaba.Utils.convertToRows;
 import static com.alibaba.Utils.getLastNode;
-import static com.alibaba.ops.Sort.Order.ASCENDING;
-import static com.alibaba.ops.Sort.Order.DESCENDING;
+import static com.alibaba.ops.single.Sort.Order.ASCENDING;
+import static com.alibaba.ops.single.Sort.Order.DESCENDING;
 import static java.util.Arrays.asList;
 
 public class Main {
 
     public static void main(String[] args) {
-
         SingleInputNode headGraphNode = chainOperations(
                 new WordSplitMap(),
                 new LambdaMap<String, String>(String::toLowerCase, 0),
@@ -51,6 +54,34 @@ public class Main {
             headGraphNode.process(row);
         }
         headGraphNode.process(Row.terminalRow());
+
+//        SingleInputNode leftInput = chainOperations(
+//                new Print("+++ Left: ")
+//        );
+//
+//        SingleInputNode rightInput = chainOperations(
+//                new Print("*** Right: ")
+//        );
+//
+//        DoubleInputNode joinNode = new DoubleInputNode(new DumbJoin());
+//        getLastNode(leftInput).getNextNodes().add(joinNode.getLeft());
+//        getLastNode(rightInput).getNextNodes().add(joinNode.getRight());
+//
+//        joinNode.setNextStep(
+//                new SingleInputNode(
+//                        new Print("--- Output: ")
+//                )
+//        );
+//
+//        List<Row> leftInputRows = convertToRows(INPUT_VALUES);
+//        List<Row> rightInputRows = convertToRows(INPUT_NUMBERS);
+//
+//        for (int index = 0; index < 10; index++) {
+//            leftInput.process(leftInputRows.get(index));
+//            rightInput.process(rightInputRows.get(index));
+//        }
+//        leftInput.process(Row.terminalRow());
+//        rightInput.process(Row.terminalRow());
     }
 
     public static final List<String> INPUT_VALUES = asList(
@@ -88,4 +119,9 @@ public class Main {
             "Come all you xeno scum and fallen heretics, come and face the one true might of the universe and wither under the Golden Throne's gaze!",
             "Take them, and quickly!"
     );
+
+    public static final List<Integer> INPUT_NUMBERS = IntStream
+            .range(0, 20)
+            .boxed()
+            .collect(Collectors.toList());
 }

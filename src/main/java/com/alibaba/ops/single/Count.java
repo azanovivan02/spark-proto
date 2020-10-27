@@ -1,10 +1,9 @@
-package com.alibaba.ops;
+package com.alibaba.ops.single;
 
 import com.alibaba.nodes.OutputCollector;
 import com.alibaba.Row;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class Count implements TerminalAwareOperation {
 

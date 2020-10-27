@@ -1,4 +1,4 @@
-package com.alibaba.ops;
+package com.alibaba.ops.single;
 
 import com.alibaba.nodes.OutputCollector;
 import com.alibaba.Row;

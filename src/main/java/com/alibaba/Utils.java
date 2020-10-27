@@ -2,7 +2,7 @@ package com.alibaba;
 
 import com.alibaba.nodes.InputProcessor;
 import com.alibaba.nodes.SingleInputNode;
-import com.alibaba.ops.SingleInputOperation;
+import com.alibaba.ops.single.SingleInputOperation;
 
 import java.util.Arrays;
 import java.util.Collection;

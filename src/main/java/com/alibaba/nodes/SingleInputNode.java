@@ -1,8 +1,8 @@
 package com.alibaba.nodes;
 
 import com.alibaba.Row;
-import com.alibaba.ops.SingleInputOperation;
-import com.alibaba.ops.TerminalAwareOperation;
+import com.alibaba.ops.single.SingleInputOperation;
+import com.alibaba.ops.single.TerminalAwareOperation;
 
 import java.util.ArrayList;
 import java.util.List;
