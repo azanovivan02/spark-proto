@@ -4,28 +4,53 @@ import com.alibaba.nodes.InputProcessor;
 import com.alibaba.nodes.SingleInputNode;
 import com.alibaba.ops.single.SingleInputOperation;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.singletonMap;
+
 public class Utils {
 
-    public static List<Row> convertToRows(Collection<?> inputValues) {
+    public static List<Row> convertToRows(String columnName, Collection<?> inputValues) {
         return inputValues
                 .stream()
-                .map(values -> new Row(Arrays.asList(values)))
+                .map(value -> new Row(singletonMap(columnName, value)))
                 .collect(Collectors.toList());
     }
 
+    public static List<Row> convertToRows(String[] schema, Object[]...inputTuples) {
+        ArrayList<Row> outputRows = new ArrayList<>();
+        for (Object[] tuple : inputTuples) {
+            Row row = new Row(new HashMap<>());
+            for (int columnIndex = 0; columnIndex < schema.length; columnIndex++) {
+                String columnName = schema[columnIndex];
+                Object columnValue = tuple[columnIndex];
+                row.set(columnName, columnValue);
+            }
+            outputRows.add(row);
+        }
+
+        return outputRows;
+    }
+
     public static SingleInputNode chainOperations(SingleInputOperation...operations) {
-        if (operations.length == 0) {
-            return null;
+        switch (operations.length) {
+            case 0: {
+                return null;
+            }
+            case 1: {
+                return new SingleInputNode(operations[0]);
+            }
         }
 
         SingleInputNode firstNode = new SingleInputNode(operations[0]);
         SingleInputNode previousNode = firstNode;
-        for (int operationIndex = 0; operationIndex < operations.length; operationIndex++) {
+        for (int operationIndex = 1; operationIndex < operations.length; operationIndex++) {
             SingleInputOperation currentOperation = operations[operationIndex];
             SingleInputNode currentNode = new SingleInputNode(currentOperation);
             previousNode

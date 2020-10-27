@@ -14,14 +14,30 @@ public class Sort implements TerminalAwareOperation {
     private final List<Row> accumulatedRows = new ArrayList<>();
 
     private final Order order;
-    private final int keyIndex;
+    private final String[] keyColumns;
     private final Comparator<Row> rowComparator;
 
-    public Sort(Order order, int keyIndex) {
+    public Sort(Order order, String... keyColumns) {
         this.order = order;
-        this.keyIndex = keyIndex;
+        this.keyColumns = keyColumns;
 
-        Comparator<Row> comparator = Comparator.comparing(row -> (Comparable) row.get(keyIndex));
+        Comparator<Row> comparator = new Comparator<Row>() {
+            @Override
+            public int compare(Row o1, Row o2) {
+                for (String column : keyColumns) {
+                    Comparable leftValue = (Comparable) o1.get(column);
+                    Comparable rightValue = (Comparable) o2.get(column);
+                    int comparisonResult = leftValue.compareTo(rightValue);
+                    if (comparisonResult != 0) {
+                        return comparisonResult;
+                    }
+                }
+
+                return 0;
+            }
+
+        };
+
         if (order == Order.DESCENDING) {
             this.rowComparator = comparator.reversed();
         } else {

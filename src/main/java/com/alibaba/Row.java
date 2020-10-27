@@ -1,47 +1,74 @@
 package com.alibaba;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 
 public class Row {
 
-    private List<Object> values = new ArrayList<>();
+    private Map<String, Object> values;
 
-    public Row(List<Object> values) {
+    public Row(Map<String, Object> values) {
         this.values = values;
     }
 
-    public List<Object> getValues() {
+    public Map<String, Object> getValues() {
         return values;
     }
 
-    public Object get(int index) {
-        return values.get(index);
+    public Object getSingle() {
+        return values.values().iterator().next();
     }
 
-    public String getString(int index) {
-        return (String) values.get(index);
+    public String getSingleString() {
+        return (String) getSingle();
+    }
+
+    public Object get(String columnName) {
+        return values.get(columnName);
+    }
+
+    public String getString(String columnName) {
+        return (String) get(columnName);
+    }
+
+    public Row set(String columnName, Object value) {
+        this.values.put(columnName, value);
+        return this;
     }
 
     public Row copy() {
-        return new Row(new ArrayList<>(values));
+        return new Row(
+                new LinkedHashMap<>(values)
+        );
     }
 
-    public Row replaceAndCopy(int index, Object value) {
-        ArrayList<Object> newValues = new ArrayList<>(this.values);
-        newValues.set(index, value);
+    public Row copyColumns(String...columns) {
+        LinkedHashMap<String, Object> newValues = new LinkedHashMap<>();
+        for (String column : columns) {
+            newValues.put(
+                    column,
+                    values.get(column)
+            );
+        }
         return new Row(newValues);
     }
 
-    public Row addAndCopy(Object value) {
-        ArrayList<Object> newValues = new ArrayList<>(this.values);
-        newValues.add(value);
+    public Row copyColumnsExcept(String...excludedColumns) {
+        LinkedHashMap<String, Object> newValues = new LinkedHashMap<>(values);
+        newValues
+                .keySet()
+                .removeAll(Arrays.asList(excludedColumns));
         return new Row(newValues);
     }
 
-    public boolean isTerminal(){
+    public boolean isTerminal() {
         return values == null;
     }
 

@@ -8,19 +8,21 @@ import java.util.function.Function;
 public class LambdaMap<I, O> implements SingleInputOperation {
 
     private final Function<I, O> lambda;
-    private int columnIndex;
+    private String column;
 
-    public LambdaMap(Function<I, O> lambda, int columnIndex) {
+    public LambdaMap(String column, Function<I, O> lambda) {
         this.lambda = lambda;
-        this.columnIndex = columnIndex;
+        this.column = column;
     }
 
     @Override
     public void apply(Row inputRow, OutputCollector collector) {
-        I inputValue = (I) inputRow.get(columnIndex);
+        I inputValue = (I) inputRow.get(column);
         O outputValue = lambda.apply(inputValue);
 
-        Row outputRow = inputRow.replaceAndCopy(columnIndex, outputValue);
+        Row outputRow = inputRow
+                .copy()
+                .set(column, outputValue);
         collector.collect(outputRow);
     }
 }

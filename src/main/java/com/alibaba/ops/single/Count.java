@@ -7,20 +7,21 @@ import java.util.Arrays;
 
 public class Count implements TerminalAwareOperation {
 
-    private final int[] groupByIndices;
+    private final String[] groupByColumns;
 
     Row currentRow = null;
     int currentCount = 0;
 
-    public Count(int... groupByIndices) {
-        this.groupByIndices = groupByIndices;
+    public Count(String... groupByColumns) {
+        this.groupByColumns = groupByColumns;
     }
 
     @Override
     public void apply(Row inputRow, OutputCollector collector) {
         if (inputRow.isTerminal()) {
             if (currentRow != null) {
-                Row newRow = new Row(Arrays.asList(currentRow.get(0), currentCount));
+                Row newRow = currentRow.copyColumns(groupByColumns);
+                newRow.set("Count", currentCount);
                 collector.collect(newRow);
             }
 
@@ -29,9 +30,10 @@ public class Count implements TerminalAwareOperation {
             return;
         }
 
-        if (currentRow == null || !equalByColumns(inputRow, currentRow, groupByIndices)) {
+        if (currentRow == null || !equalByColumns(inputRow, currentRow, groupByColumns)) {
             if (currentRow != null) {
-                Row newRow = currentRow.addAndCopy(currentCount);
+                Row newRow = currentRow.copyColumns(groupByColumns);
+                newRow.set("Count", currentCount);
                 collector.collect(newRow);
             }
             currentCount = 1;
@@ -41,10 +43,10 @@ public class Count implements TerminalAwareOperation {
         }
     }
 
-    private boolean equalByColumns(Row left, Row right, int... indices) {
-        for (int index : indices) {
-            Object leftValue = left.get(index);
-            Object rightValue = right.get(index);
+    private boolean equalByColumns(Row left, Row right, String... comparisonColumns) {
+        for (String column : comparisonColumns) {
+            Object leftValue = left.get(column);
+            Object rightValue = right.get(column);
             if (!leftValue.equals(rightValue)) {
                 return false;
             }
