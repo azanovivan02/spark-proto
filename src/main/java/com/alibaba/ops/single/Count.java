@@ -3,8 +3,6 @@ package com.alibaba.ops.single;
 import com.alibaba.nodes.OutputCollector;
 import com.alibaba.Row;
 
-import java.util.Arrays;
-
 public class Count implements TerminalAwareOperation {
 
     private final String[] groupByColumns;
@@ -22,11 +20,11 @@ public class Count implements TerminalAwareOperation {
             if (currentRow != null) {
                 Row newRow = currentRow.copyColumns(groupByColumns);
                 newRow.set("Count", currentCount);
-                collector.collect(newRow);
+                collector.push(newRow);
             }
 
             currentRow = null;
-            collector.collect(inputRow);
+            collector.push(inputRow);
             return;
         }
 
@@ -34,7 +32,7 @@ public class Count implements TerminalAwareOperation {
             if (currentRow != null) {
                 Row newRow = currentRow.copyColumns(groupByColumns);
                 newRow.set("Count", currentCount);
-                collector.collect(newRow);
+                collector.push(newRow);
             }
             currentCount = 1;
             currentRow = inputRow;

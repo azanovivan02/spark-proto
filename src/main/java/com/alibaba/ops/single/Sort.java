@@ -25,8 +25,8 @@ public class Sort implements TerminalAwareOperation {
             @Override
             public int compare(Row o1, Row o2) {
                 for (String column : keyColumns) {
-                    Comparable leftValue = (Comparable) o1.get(column);
-                    Comparable rightValue = (Comparable) o2.get(column);
+                    Comparable leftValue = o1.getComparable(column);
+                    Comparable rightValue = o2.getComparable(column);
                     int comparisonResult = leftValue.compareTo(rightValue);
                     if (comparisonResult != 0) {
                         return comparisonResult;
@@ -54,9 +54,9 @@ public class Sort implements TerminalAwareOperation {
 
         sort(accumulatedRows, rowComparator);
         for (Row row : accumulatedRows) {
-            collector.collect(row);
+            collector.push(row);
         }
-        collector.collect(Row.terminalRow());
+        collector.push(Row.terminalRow());
     }
 
     public enum Order {

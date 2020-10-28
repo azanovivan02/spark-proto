@@ -3,6 +3,5 @@ package com.alibaba.nodes;
 import com.alibaba.Row;
 
 public interface OutputCollector {
-
-    void collect(Row outputRow);
+    void push(Row outputRow);
 }

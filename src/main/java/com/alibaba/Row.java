@@ -22,14 +22,6 @@ public class Row {
         return values;
     }
 
-    public Object getSingle() {
-        return values.values().iterator().next();
-    }
-
-    public String getSingleString() {
-        return (String) getSingle();
-    }
-
     public Object get(String columnName) {
         return values.get(columnName);
     }
@@ -38,8 +30,17 @@ public class Row {
         return (String) get(columnName);
     }
 
+    public Comparable getComparable(String columnName) {
+        return (Comparable) get(columnName);
+    }
+
     public Row set(String columnName, Object value) {
         this.values.put(columnName, value);
+        return this;
+    }
+
+    public Row setAll(Map<String, Object> inputEntries) {
+        this.values.putAll(inputEntries);
         return this;
     }
 
@@ -49,7 +50,7 @@ public class Row {
         );
     }
 
-    public Row copyColumns(String...columns) {
+    public Row copyColumns(String... columns) {
         LinkedHashMap<String, Object> newValues = new LinkedHashMap<>();
         for (String column : columns) {
             newValues.put(
@@ -60,7 +61,7 @@ public class Row {
         return new Row(newValues);
     }
 
-    public Row copyColumnsExcept(String...excludedColumns) {
+    public Row copyColumnsExcept(String... excludedColumns) {
         LinkedHashMap<String, Object> newValues = new LinkedHashMap<>(values);
         newValues
                 .keySet()

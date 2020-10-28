@@ -1,6 +1,7 @@
-package com.alibaba;
+package com.alibaba.cases;
 
-import com.alibaba.nodes.SingleInputNode;
+import com.alibaba.Row;
+import com.alibaba.nodes.SparkNode;
 import com.alibaba.ops.single.Count;
 import com.alibaba.ops.single.Print;
 import com.alibaba.ops.single.Sort;
@@ -12,10 +13,10 @@ import static com.alibaba.Utils.chainOperations;
 import static com.alibaba.Utils.convertToRows;
 import static com.alibaba.ops.single.Sort.Order.ASCENDING;
 
-public class CaseDocument {
+public class TableCase {
 
     public static void processCaseDocument() {
-        SingleInputNode graph = chainOperations(
+        SparkNode graph = chainOperations(
                 new WordSplitMap("Text", "Word"),
                 new Sort(ASCENDING, "Author", "Word"),
                 new Count("Author", "Word"),
@@ -23,9 +24,9 @@ public class CaseDocument {
         );
 
         for (Row row : inputRows) {
-            graph.process(row);
+            graph.push(row, 0);
         }
-        graph.process(Row.terminalRow());
+        graph.push(Row.terminalRow(), 0);
     }
 
     private static final List<Row> inputRows = convertToRows(

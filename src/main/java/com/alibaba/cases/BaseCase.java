@@ -1,6 +1,7 @@
-package com.alibaba;
+package com.alibaba.cases;
 
-import com.alibaba.nodes.SingleInputNode;
+import com.alibaba.Row;
+import com.alibaba.nodes.SparkNode;
 import com.alibaba.ops.single.Count;
 import com.alibaba.ops.single.FirstNReduce;
 import com.alibaba.ops.single.LambdaMap;
@@ -18,18 +19,28 @@ import static com.alibaba.ops.single.Sort.Order.ASCENDING;
 import static com.alibaba.ops.single.Sort.Order.DESCENDING;
 import static java.util.Arrays.asList;
 
-public class CaseBase {
+public class BaseCase {
 
     public static void processBaseCase() {
-        SingleInputNode headGraphNode = chainOperations(
+        SparkNode headGraphNode = createBaseCaseGraph();
+
+        List<Row> inputRows = convertToRows("Doc", INPUT_VALUES);
+        for (Row row : inputRows) {
+            headGraphNode.push(row, 0);
+        }
+        headGraphNode.push(Row.terminalRow(), 0);
+    }
+
+    public static SparkNode createBaseCaseGraph() {
+        SparkNode headGraphNode = chainOperations(
                 new WordSplitMap("Doc", "Word"),
                 new LambdaMap<String, String>("Word", String::toLowerCase),
                 new LambdaMap<String, String>("Word", w -> w.replaceAll("[\\.\\'\\,\\!]", "")),
                 new Sort(ASCENDING, "Word"),
                 new Count("Word")
         );
-        SingleInputNode splitGraphNode = getLastNode(headGraphNode);
 
+        SparkNode splitGraphNode = getLastNode(headGraphNode);
         appendOperations(
                 splitGraphNode,
                 new Sort(DESCENDING, "Count"),
@@ -44,11 +55,7 @@ public class CaseBase {
                 new Print("--- Top 10 rare words")
         );
 
-        List<Row> inputRows = convertToRows("Doc", INPUT_VALUES);
-        for (Row row : inputRows) {
-            headGraphNode.process(row);
-        }
-        headGraphNode.process(Row.terminalRow());
+        return headGraphNode;
     }
 
     private static final List<String> INPUT_VALUES = asList(

@@ -14,6 +14,6 @@ public class Print implements SingleInputOperation {
     @Override
     public void apply(Row inputRow, OutputCollector collector) {
         System.out.printf("%s: %s%n", prefix, inputRow);
-        collector.collect(inputRow);
+        collector.push(inputRow);
     }
 }

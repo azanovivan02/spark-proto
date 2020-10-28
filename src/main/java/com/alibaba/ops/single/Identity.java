@@ -7,7 +7,7 @@ public class Identity implements SingleInputOperation {
 
     @Override
     public void apply(Row inputRow, OutputCollector collector) {
-        collector.collect(inputRow);
+        collector.push(inputRow);
     }
 
 }

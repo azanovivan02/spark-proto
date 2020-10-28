@@ -23,6 +23,6 @@ public class LambdaMap<I, O> implements SingleInputOperation {
         Row outputRow = inputRow
                 .copy()
                 .set(column, outputValue);
-        collector.collect(outputRow);
+        collector.push(outputRow);
     }
 }

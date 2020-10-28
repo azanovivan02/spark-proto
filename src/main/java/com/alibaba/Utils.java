@@ -1,13 +1,11 @@
 package com.alibaba;
 
-import com.alibaba.nodes.InputProcessor;
-import com.alibaba.nodes.SingleInputNode;
+import com.alibaba.nodes.NodeGateInfo;
+import com.alibaba.nodes.SparkNode;
 import com.alibaba.ops.single.SingleInputOperation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,63 +36,63 @@ public class Utils {
         return outputRows;
     }
 
-    public static SingleInputNode chainOperations(SingleInputOperation...operations) {
+    public static SparkNode chainOperations(SingleInputOperation...operations) {
         switch (operations.length) {
             case 0: {
                 return null;
             }
             case 1: {
-                return new SingleInputNode(operations[0]);
+                return new SparkNode(operations[0]);
             }
         }
 
-        SingleInputNode firstNode = new SingleInputNode(operations[0]);
-        SingleInputNode previousNode = firstNode;
+        SparkNode firstNode = new SparkNode(operations[0]);
+        SparkNode previousNode = firstNode;
         for (int operationIndex = 1; operationIndex < operations.length; operationIndex++) {
             SingleInputOperation currentOperation = operations[operationIndex];
-            SingleInputNode currentNode = new SingleInputNode(currentOperation);
+            SparkNode currentNode = new SparkNode(currentOperation);
             previousNode
                     .getNextNodes()
-                    .add(currentNode);
+                    .add(new NodeGateInfo(currentNode, 0));
             previousNode = currentNode;
         }
 
         return firstNode;
     }
 
-    public static SingleInputNode appendOperations(SingleInputNode node, SingleInputOperation...operations) {
+    public static SparkNode appendOperations(SparkNode node, SingleInputOperation...operations) {
         if (operations.length == 0) {
             return node;
         }
 
-        SingleInputNode firstNode = node;
-        SingleInputNode previousNode = firstNode;
+        SparkNode firstNode = node;
+        SparkNode previousNode = firstNode;
         for (int operationIndex = 0; operationIndex < operations.length; operationIndex++) {
             SingleInputOperation currentOperation = operations[operationIndex];
-            SingleInputNode currentNode = new SingleInputNode(currentOperation);
+            SparkNode currentNode = new SparkNode(currentOperation);
             previousNode
                     .getNextNodes()
-                    .add(currentNode);
+                    .add(new NodeGateInfo(currentNode, 0));
             previousNode = currentNode;
         }
 
         return firstNode;
     }
 
-    public static SingleInputNode getLastNode(SingleInputNode firstNode) {
+    public static SparkNode getLastNode(SparkNode firstNode) {
         if (firstNode == null) {
             return null;
         }
 
-        SingleInputNode currentNode = firstNode;
+        SparkNode currentNode = firstNode;
         while (true) {
-            List<InputProcessor> nextNodes = currentNode.getNextNodes();
+            List<NodeGateInfo> nextNodes = currentNode.getNextNodes();
             switch (nextNodes.size()) {
                 case 0: {
                     return currentNode;
                 }
                 case 1: {
-                    currentNode = (SingleInputNode) nextNodes.get(0);
+                    currentNode = nextNodes.get(0).getNode();
                     break;
                 }
                 default: {

@@ -24,7 +24,7 @@ public class WordSplitMap implements SingleInputOperation {
             Row newRow = inputRow
                     .copyColumnsExcept(inputColumn)
                     .set(outputColumn, word);
-            collector.collect(newRow);
+            collector.push(newRow);
         }
     }
 }

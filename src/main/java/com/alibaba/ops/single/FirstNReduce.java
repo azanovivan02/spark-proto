@@ -15,9 +15,9 @@ public class FirstNReduce implements SingleInputOperation {
     @Override
     public void apply(Row inputRow, OutputCollector collector) {
         if (currentAmount < maxAmount) {
-            collector.collect(inputRow);
+            collector.push(inputRow);
         } else if (currentAmount == maxAmount) {
-            collector.collect(Row.terminalRow());
+            collector.push(Row.terminalRow());
         }
         currentAmount++;
     }

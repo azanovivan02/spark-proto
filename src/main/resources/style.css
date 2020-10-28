@@ -1,0 +1,25 @@
+graph {
+    padding: 100px, 100px;
+}
+
+node {
+    size: 15px;
+    fill-color: black;
+    text-alignment: at-right;
+    text-offset: 30, 30;
+    text-size: 30;
+    text-background-mode: plain;
+}
+
+node.input {
+    fill-color: red;
+}
+
+node.output {
+    fill-color: green;
+}
+
+edge {
+    arrow-shape: arrow;
+    arrow-size: 20px, 4px;
+}
