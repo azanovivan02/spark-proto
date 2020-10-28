@@ -2,7 +2,7 @@ package com.alibaba.cases;
 
 import com.alibaba.GraphBuilder;
 import com.alibaba.Row;
-import com.alibaba.nodes.Node;
+import com.alibaba.nodes.CompNode;
 import com.alibaba.ops.single.Count;
 import com.alibaba.ops.single.FirstNReduce;
 import com.alibaba.ops.single.LambdaMap;
@@ -17,12 +17,13 @@ import static com.alibaba.Utils.pushAllThenTerminal;
 import static com.alibaba.ops.single.Sort.Order.ASCENDING;
 import static com.alibaba.ops.single.Sort.Order.DESCENDING;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 public class BaseCase implements TestCase {
 
     @Override
     public void launch() {
-        Node headGraphNode = createGraph();
+        CompNode headGraphNode = createGraph().get(0);
 
         List<Row> inputRows = convertToRows("Doc", INPUT_VALUES);
 
@@ -30,7 +31,7 @@ public class BaseCase implements TestCase {
     }
 
     @Override
-    public Node createGraph() {
+    public List<CompNode> createGraph() {
         GraphBuilder graphBuilder = GraphBuilder
                 .startWith(new WordSplitMap("Doc", "Word"))
                 .then(new LambdaMap<String, String>("Word", String::toLowerCase))
@@ -50,7 +51,9 @@ public class BaseCase implements TestCase {
                 .then(new FirstNReduce(10))
                 .then(new Print("--- Top 10 rare words"));
 
-        return graphBuilder.getStartNode();
+        return singletonList(
+                graphBuilder.getStartNode()
+        );
     }
 
     private static final List<String> INPUT_VALUES = asList(

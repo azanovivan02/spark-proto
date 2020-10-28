@@ -5,7 +5,7 @@ import com.alibaba.cases.BaseCase;
 import com.alibaba.cases.JoinCase;
 import com.alibaba.cases.TableCase;
 import com.alibaba.cases.TestCase;
-import com.alibaba.nodes.Node;
+import com.alibaba.nodes.CompNode;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,12 +21,14 @@ public class Main {
                 new JoinCase()
         );
         for (TestCase testCase : testCases) {
-            testCase.launch();
-            System.out.println("\n=============\n");
-        }
+            String caseName = testCase.getClass().getSimpleName();
 
-        Node baseCaseGraph = testCases.get(1).createGraph();
-        visualizeGraph(baseCaseGraph);
+            System.out.printf("\n== %s ========\n\n", caseName);
+            testCase.launch();
+
+            List<CompNode> compGraph = testCase.createGraph();
+            visualizeGraph(compGraph);
+        }
     }
 
 }

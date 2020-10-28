@@ -13,13 +13,13 @@ import static com.alibaba.ops.OpType.DOUBLE_INPUT;
 import static com.alibaba.ops.OpType.SINGLE_INPUT;
 import static com.alibaba.ops.OpType.TERMINAL_AWARE;
 
-public class Node {
+public class CompNode {
 
     private final Operation operation;
     private final OpType opType;
     private final List<Connection> nextNodes;
 
-    public Node(Operation operation) {
+    public CompNode(Operation operation) {
         this.operation = operation;
         this.nextNodes = new ArrayList<>();
         this.opType = getOpType(operation);
@@ -43,7 +43,7 @@ public class Node {
         return nextNodes;
     }
 
-    public void addConnection(Node node, int gate) {
+    public void addConnection(CompNode node, int gate) {
         Connection connection = new Connection(node, gate);
         nextNodes.add(connection);
     }
@@ -87,7 +87,7 @@ public class Node {
 
     private void collect(Row row) {
         for (Connection info : nextNodes) {
-            Node node = info.getNode();
+            CompNode node = info.getNode();
             int gateNumber = info.getGate();
             node.push(row, gateNumber);
         }

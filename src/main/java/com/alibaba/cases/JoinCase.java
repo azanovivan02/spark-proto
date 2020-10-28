@@ -2,7 +2,7 @@ package com.alibaba.cases;
 
 import com.alibaba.GraphBuilder;
 import com.alibaba.Row;
-import com.alibaba.nodes.Node;
+import com.alibaba.nodes.CompNode;
 import com.alibaba.ops.InnerJoin;
 import com.alibaba.ops.single.Print;
 
@@ -10,11 +10,23 @@ import java.util.List;
 
 import static com.alibaba.Utils.convertToRows;
 import static com.alibaba.Utils.pushAllThenTerminal;
+import static java.util.Arrays.asList;
 
 public class JoinCase implements TestCase {
 
     @Override
     public void launch() {
+        List<CompNode> startNodes = createGraph();
+
+        CompNode leftStartNode = startNodes.get(0);
+        CompNode rightStartNode = startNodes.get(1);
+
+        pushAllThenTerminal(leftStartNode, leftRows);
+        pushAllThenTerminal(rightStartNode, rightRows);
+    }
+
+    @Override
+    public List<CompNode> createGraph() {
         GraphBuilder rightGraphBuilder = GraphBuilder
                 .startWith(new Print("--- right: "));
 
@@ -23,15 +35,11 @@ public class JoinCase implements TestCase {
                 .join(rightGraphBuilder, new InnerJoin("AuthorId"))
                 .then(new Print("*** output: "));
 
-        Node leftStartNode = leftGraphBuilder
-                .getStartNode();
-        Node rightStartNode = rightGraphBuilder
-                .getStartNode();
-
-        pushAllThenTerminal(leftStartNode, leftRows);
-        pushAllThenTerminal(rightStartNode, rightRows);
+        return asList(
+                leftGraphBuilder.getStartNode(),
+                rightGraphBuilder.getStartNode()
+        );
     }
-
 
     private static final List<Row> leftRows = convertToRows(
             new String[]{"DocId", "Text", "AuthorId"},

@@ -1,15 +1,15 @@
 package com.alibaba.nodes;
 
 public class Connection {
-    private final Node node;
+    private final CompNode node;
     private final int gate;
 
-    public Connection(Node node, int gate) {
+    public Connection(CompNode node, int gate) {
         this.node = node;
         this.gate = gate;
     }
 
-    public Node getNode() {
+    public CompNode getNode() {
         return node;
     }
 

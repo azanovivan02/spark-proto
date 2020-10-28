@@ -1,10 +1,11 @@
 package com.alibaba.cases;
 
-import com.alibaba.nodes.Node;
+import com.alibaba.nodes.CompNode;
+
+import java.util.List;
 
 public interface TestCase {
     void launch();
-    default Node createGraph() {
-        throw new IllegalStateException("Not implemented");
-    }
+
+    List<CompNode> createGraph();
 }

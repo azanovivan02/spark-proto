@@ -2,7 +2,7 @@ package com.alibaba.cases;
 
 import com.alibaba.GraphBuilder;
 import com.alibaba.Row;
-import com.alibaba.nodes.Node;
+import com.alibaba.nodes.CompNode;
 import com.alibaba.ops.single.Count;
 import com.alibaba.ops.single.Print;
 import com.alibaba.ops.single.Sort;
@@ -13,23 +13,26 @@ import java.util.List;
 import static com.alibaba.Utils.convertToRows;
 import static com.alibaba.Utils.pushAllThenTerminal;
 import static com.alibaba.ops.single.Sort.Order.ASCENDING;
+import static java.util.Collections.singletonList;
 
 public class TableCase implements TestCase {
 
     @Override
     public void launch() {
-        Node graph = createGraph();
+        CompNode graph = createGraph().get(0);
         pushAllThenTerminal(graph, inputRows);
     }
 
     @Override
-    public Node createGraph() {
-        return GraphBuilder
+    public List<CompNode> createGraph() {
+        CompNode startNode = GraphBuilder
                 .startWith(new WordSplitMap("Text", "Word"))
                 .then(new Sort(ASCENDING, "Author", "Word"))
                 .then(new Count("Author", "Word"))
                 .then(new Print("+++ "))
                 .getStartNode();
+
+        return singletonList(startNode);
     }
 
     private static final List<Row> inputRows = convertToRows(
