@@ -2,7 +2,7 @@ package com.alibaba.cases;
 
 import com.alibaba.GraphBuilder;
 import com.alibaba.Row;
-import com.alibaba.nodes.SparkNode;
+import com.alibaba.nodes.Node;
 import com.alibaba.ops.single.Count;
 import com.alibaba.ops.single.Print;
 import com.alibaba.ops.single.Sort;
@@ -14,17 +14,22 @@ import static com.alibaba.Utils.convertToRows;
 import static com.alibaba.Utils.pushAllThenTerminal;
 import static com.alibaba.ops.single.Sort.Order.ASCENDING;
 
-public class TableCase {
+public class TableCase implements TestCase {
 
-    public static void processCaseDocument() {
-        SparkNode startNode = GraphBuilder
+    @Override
+    public void launch() {
+        Node graph = createGraph();
+        pushAllThenTerminal(graph, inputRows);
+    }
+
+    @Override
+    public Node createGraph() {
+        return GraphBuilder
                 .startWith(new WordSplitMap("Text", "Word"))
                 .then(new Sort(ASCENDING, "Author", "Word"))
                 .then(new Count("Author", "Word"))
                 .then(new Print("+++ "))
                 .getStartNode();
-
-        pushAllThenTerminal(startNode, inputRows);
     }
 
     private static final List<Row> inputRows = convertToRows(

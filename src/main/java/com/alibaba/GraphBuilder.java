@@ -1,12 +1,14 @@
 package com.alibaba;
 
-import com.alibaba.nodes.NodeGateInfo;
-import com.alibaba.nodes.SparkNode;
+import com.alibaba.nodes.Connection;
+import com.alibaba.nodes.Node;
 import com.alibaba.ops.Operation;
+
+import java.util.List;
 
 public class GraphBuilder {
 
-    public static GraphBuilder startWith(SparkNode node) {
+    public static GraphBuilder startWith(Node node) {
         GraphBuilder graphBuilder = new GraphBuilder();
         graphBuilder.startNode = node;
         graphBuilder.endNode = node;
@@ -14,36 +16,36 @@ public class GraphBuilder {
     }
 
     public static GraphBuilder startWith(Operation operation) {
-        return startWith(new SparkNode(operation));
+        return startWith(new Node(operation));
     }
 
-    private SparkNode startNode;
-    private SparkNode endNode;
+    private Node startNode;
+    private Node endNode;
 
     private GraphBuilder() {
     }
 
-    private GraphBuilder(SparkNode startNode, SparkNode endNode) {
+    private GraphBuilder(Node startNode, Node endNode) {
         this.startNode = startNode;
         this.endNode = endNode;
     }
 
-    public SparkNode getStartNode() {
+    public Node getStartNode() {
         return startNode;
     }
 
-    public SparkNode getEndNode() {
+    public Node getEndNode() {
         return endNode;
     }
 
-    public GraphBuilder then(SparkNode newNode) {
-        endNode.getNextNodes().add(new NodeGateInfo(newNode, 0));
+    public GraphBuilder then(Node newNode) {
+        endNode.addConnection(newNode, 0);
         endNode = newNode;
         return this;
     }
 
     public GraphBuilder then(Operation operation) {
-        SparkNode newNode = new SparkNode(operation);
+        Node newNode = new Node(operation);
         return then(newNode);
     }
 
@@ -52,11 +54,14 @@ public class GraphBuilder {
     }
 
     public GraphBuilder join(GraphBuilder rightGraphBuilder, Operation joinOperation) {
-        SparkNode newNode = new SparkNode(joinOperation);
-        this.endNode.getNextNodes().add(new NodeGateInfo(newNode, 0));
-        rightGraphBuilder.endNode.getNextNodes().add(new NodeGateInfo(newNode, 1));
+        Node joinNode = new Node(joinOperation);
+        Node leftInputNode = this.endNode;
+        Node rightInputNode = rightGraphBuilder.endNode;
 
-        this.endNode = newNode;
+        leftInputNode.addConnection(joinNode, 0);
+        rightInputNode.addConnection(joinNode, 1);
+        this.endNode = joinNode;
+
         return this;
     }
 }

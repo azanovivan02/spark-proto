@@ -13,13 +13,13 @@ import static com.alibaba.ops.OpType.DOUBLE_INPUT;
 import static com.alibaba.ops.OpType.SINGLE_INPUT;
 import static com.alibaba.ops.OpType.TERMINAL_AWARE;
 
-public class SparkNode {
+public class Node {
 
     private final Operation operation;
     private final OpType opType;
-    private final List<NodeGateInfo> nextNodes;
+    private final List<Connection> nextNodes;
 
-    public SparkNode(Operation operation) {
+    public Node(Operation operation) {
         this.operation = operation;
         this.nextNodes = new ArrayList<>();
         this.opType = getOpType(operation);
@@ -39,8 +39,13 @@ public class SparkNode {
         return operation;
     }
 
-    public List<NodeGateInfo> getNextNodes() {
+    public List<Connection> getNextNodes() {
         return nextNodes;
+    }
+
+    public void addConnection(Node node, int gate) {
+        Connection connection = new Connection(node, gate);
+        nextNodes.add(connection);
     }
 
     public void push(Row inputRow, int gateNumber) {
@@ -81,9 +86,9 @@ public class SparkNode {
     }
 
     private void collect(Row row) {
-        for (NodeGateInfo info : nextNodes) {
-            SparkNode node = info.getNode();
-            int gateNumber = info.getGateNumber();
+        for (Connection info : nextNodes) {
+            Node node = info.getNode();
+            int gateNumber = info.getGate();
             node.push(row, gateNumber);
         }
     }

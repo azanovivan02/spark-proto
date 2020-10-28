@@ -1,25 +1,31 @@
 package com.alibaba;
 
 
-import com.alibaba.nodes.SparkNode;
+import com.alibaba.cases.BaseCase;
+import com.alibaba.cases.JoinCase;
+import com.alibaba.cases.TableCase;
+import com.alibaba.cases.TestCase;
+import com.alibaba.nodes.Node;
 
-import static com.alibaba.cases.BaseCase.createBaseCaseGraph;
-import static com.alibaba.cases.BaseCase.processBaseCase;
-import static com.alibaba.cases.JoinCase.processJoinCase;
-import static com.alibaba.cases.TableCase.processCaseDocument;
+import java.util.Arrays;
+import java.util.List;
+
 import static com.alibaba.ui.GraphVisualizer.visualizeGraph;
 
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("=============");
-        processBaseCase();
-        System.out.println("=============");
-        processCaseDocument();
-        System.out.println("=============");
-        processJoinCase();
+        List<TestCase> testCases = Arrays.asList(
+                new BaseCase(),
+                new TableCase(),
+                new JoinCase()
+        );
+        for (TestCase testCase : testCases) {
+            testCase.launch();
+            System.out.println("\n=============\n");
+        }
 
-        SparkNode baseCaseGraph = createBaseCaseGraph();
+        Node baseCaseGraph = testCases.get(1).createGraph();
         visualizeGraph(baseCaseGraph);
     }
 

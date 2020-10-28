@@ -2,8 +2,7 @@ package com.alibaba.cases;
 
 import com.alibaba.GraphBuilder;
 import com.alibaba.Row;
-import com.alibaba.Utils;
-import com.alibaba.nodes.SparkNode;
+import com.alibaba.nodes.Node;
 import com.alibaba.ops.InnerJoin;
 import com.alibaba.ops.single.Print;
 
@@ -12,9 +11,10 @@ import java.util.List;
 import static com.alibaba.Utils.convertToRows;
 import static com.alibaba.Utils.pushAllThenTerminal;
 
-public class JoinCase {
+public class JoinCase implements TestCase {
 
-    public static void processJoinCase() {
+    @Override
+    public void launch() {
         GraphBuilder rightGraphBuilder = GraphBuilder
                 .startWith(new Print("--- right: "));
 
@@ -23,9 +23,9 @@ public class JoinCase {
                 .join(rightGraphBuilder, new InnerJoin("AuthorId"))
                 .then(new Print("*** output: "));
 
-        SparkNode leftStartNode = leftGraphBuilder
+        Node leftStartNode = leftGraphBuilder
                 .getStartNode();
-        SparkNode rightStartNode = rightGraphBuilder
+        Node rightStartNode = rightGraphBuilder
                 .getStartNode();
 
         pushAllThenTerminal(leftStartNode, leftRows);

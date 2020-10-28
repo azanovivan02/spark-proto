@@ -1,6 +1,6 @@
 package com.alibaba;
 
-import com.alibaba.nodes.SparkNode;
+import com.alibaba.nodes.Node;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,7 +34,7 @@ public class Utils {
         return outputRows;
     }
 
-    public static void pushAllThenTerminal(SparkNode node, List<Row> rows) {
+    public static void pushAllThenTerminal(Node node, List<Row> rows) {
         for (Row row : rows) {
             node.pushIntoZero(row);
         }

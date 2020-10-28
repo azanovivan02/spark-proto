@@ -2,7 +2,7 @@ package com.alibaba.cases;
 
 import com.alibaba.GraphBuilder;
 import com.alibaba.Row;
-import com.alibaba.nodes.SparkNode;
+import com.alibaba.nodes.Node;
 import com.alibaba.ops.single.Count;
 import com.alibaba.ops.single.FirstNReduce;
 import com.alibaba.ops.single.LambdaMap;
@@ -18,17 +18,19 @@ import static com.alibaba.ops.single.Sort.Order.ASCENDING;
 import static com.alibaba.ops.single.Sort.Order.DESCENDING;
 import static java.util.Arrays.asList;
 
-public class BaseCase {
+public class BaseCase implements TestCase {
 
-    public static void processBaseCase() {
-        SparkNode headGraphNode = createBaseCaseGraph();
+    @Override
+    public void launch() {
+        Node headGraphNode = createGraph();
 
         List<Row> inputRows = convertToRows("Doc", INPUT_VALUES);
 
         pushAllThenTerminal(headGraphNode, inputRows);
     }
 
-    public static SparkNode createBaseCaseGraph() {
+    @Override
+    public Node createGraph() {
         GraphBuilder graphBuilder = GraphBuilder
                 .startWith(new WordSplitMap("Doc", "Word"))
                 .then(new LambdaMap<String, String>("Word", String::toLowerCase))
