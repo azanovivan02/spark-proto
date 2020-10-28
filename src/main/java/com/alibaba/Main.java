@@ -5,6 +5,7 @@ import com.alibaba.cases.BaseCase;
 import com.alibaba.cases.JoinCase;
 import com.alibaba.cases.TableCase;
 import com.alibaba.cases.TestCase;
+import com.alibaba.cases.TfIdfCase;
 import com.alibaba.nodes.CompNode;
 
 import java.util.Arrays;
@@ -16,9 +17,10 @@ public class Main {
 
     public static void main(String[] args) {
         List<TestCase> testCases = Arrays.asList(
-                new BaseCase(),
-                new TableCase(),
-                new JoinCase()
+//                new BaseCase(),
+//                new TableCase(),
+//                new JoinCase(),
+                new TfIdfCase()
         );
         for (TestCase testCase : testCases) {
             String caseName = testCase.getClass().getSimpleName();

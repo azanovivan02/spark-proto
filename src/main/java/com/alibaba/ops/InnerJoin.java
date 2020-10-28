@@ -48,6 +48,7 @@ public class InnerJoin implements DoubleInputOperation {
                 }
             }
         }
+        collector.collect(Row.terminalRow());
     }
 
     private int compareRows(Row leftRow, Row rightRow, String keyColumn) {

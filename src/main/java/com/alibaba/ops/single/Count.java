@@ -2,16 +2,19 @@ package com.alibaba.ops.single;
 
 import com.alibaba.nodes.OutputCollector;
 import com.alibaba.Row;
+import com.alibaba.ops.OpUtils;
 import com.alibaba.ops.TerminalAwareOperation;
 
 public class Count implements TerminalAwareOperation {
 
+    private String outputCountColumn;
     private final String[] groupByColumns;
 
     Row currentRow = null;
     int currentCount = 0;
 
-    public Count(String... groupByColumns) {
+    public Count(String outputCountColumn, String... groupByColumns) {
+        this.outputCountColumn = outputCountColumn;
         this.groupByColumns = groupByColumns;
     }
 
@@ -19,9 +22,7 @@ public class Count implements TerminalAwareOperation {
     public void apply(Row inputRow, OutputCollector collector) {
         if (inputRow.isTerminal()) {
             if (currentRow != null) {
-                Row newRow = currentRow.copyColumns(groupByColumns);
-                newRow.set("Count", currentCount);
-                collector.collect(newRow);
+                outputCountRow(collector);
             }
 
             currentRow = null;
@@ -29,11 +30,9 @@ public class Count implements TerminalAwareOperation {
             return;
         }
 
-        if (currentRow == null || !equalByColumns(inputRow, currentRow, groupByColumns)) {
+        if (currentRow == null || !OpUtils.equalByColumns(inputRow, currentRow, groupByColumns)) {
             if (currentRow != null) {
-                Row newRow = currentRow.copyColumns(groupByColumns);
-                newRow.set("Count", currentCount);
-                collector.collect(newRow);
+                outputCountRow(collector);
             }
             currentCount = 1;
             currentRow = inputRow;
@@ -42,14 +41,10 @@ public class Count implements TerminalAwareOperation {
         }
     }
 
-    private boolean equalByColumns(Row left, Row right, String... comparisonColumns) {
-        for (String column : comparisonColumns) {
-            Object leftValue = left.get(column);
-            Object rightValue = right.get(column);
-            if (!leftValue.equals(rightValue)) {
-                return false;
-            }
-        }
-        return true;
+    private void outputCountRow(OutputCollector collector) {
+        Row newRow = currentRow.copyColumns(groupByColumns);
+        newRow.set(outputCountColumn, currentCount);
+        collector.collect(newRow);
     }
+
 }

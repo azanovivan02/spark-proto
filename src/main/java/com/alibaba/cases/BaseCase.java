@@ -35,7 +35,6 @@ public class BaseCase implements TestCase {
         GraphBuilder graphBuilder = GraphBuilder
                 .startWith(new WordSplitMap("Doc", "Word"))
                 .then(new LambdaMap<String, String>("Word", String::toLowerCase))
-                .then(new LambdaMap<String, String>("Word", w -> w.replaceAll("[\\.\\'\\,\\!]", "")))
                 .then(new Sort(ASCENDING, "Word"))
                 .then(new Count("Word"));
 

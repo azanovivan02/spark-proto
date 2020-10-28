@@ -20,7 +20,7 @@ public class WordSplitMap implements Operation {
         if (inputValue == null) {
             System.out.println("hEllo");
         }
-        String[] words = inputValue.split(" ");
+        String[] words = inputValue.split("[\\s,\\.\\!\\;\\?\\']+");
         for (String word : words) {
             Row newRow = inputRow
                     .copyColumnsExcept(inputColumn)
