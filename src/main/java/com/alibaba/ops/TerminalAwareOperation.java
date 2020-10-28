@@ -1,4 +1,4 @@
-package com.alibaba.ops.single;
+package com.alibaba.ops;
 
 import com.alibaba.ops.Operation;
 

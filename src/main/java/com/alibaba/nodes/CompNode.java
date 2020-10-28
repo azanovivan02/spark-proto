@@ -4,7 +4,7 @@ import com.alibaba.Row;
 import com.alibaba.ops.DoubleInputOperation;
 import com.alibaba.ops.OpType;
 import com.alibaba.ops.Operation;
-import com.alibaba.ops.single.TerminalAwareOperation;
+import com.alibaba.ops.TerminalAwareOperation;
 
 import java.util.ArrayList;
 import java.util.List;

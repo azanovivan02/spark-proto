@@ -20,7 +20,8 @@ public class GraphVisualizer {
         System.setProperty("org.graphstream.ui", "swing");
 
         Graph visualGraph = new SingleGraph("Main");
-        visualGraph.setAttribute("ui.stylesheet", "url('/Users/ivan.azanov/Documents/Spark/spark-proto/src/main/resources/style.css')");
+//        visualGraph.setAttribute("ui.stylesheet", "url('/Users/ivan.azanov/Documents/Spark/spark-proto/src/main/resources/style.css')");
+        visualGraph.setAttribute("ui.stylesheet", STYLESHEET);
 
         Map<CompNode, Node> compVisualNodeMapping = new LinkedHashMap<>();
         for (CompNode compNode : startCompNodes) {
@@ -75,4 +76,30 @@ public class GraphVisualizer {
             currentVisualNode.setAttribute("ui.class", "output");
         }
     }
+
+    public static final String STYLESHEET = "graph {\n" +
+            "    padding: 100px, 100px;\n" +
+            "}\n" +
+            "\n" +
+            "node {\n" +
+            "    size: 15px;\n" +
+            "    fill-color: black;\n" +
+            "    text-alignment: at-right;\n" +
+            "    text-offset: 30, 30;\n" +
+            "    text-size: 30;\n" +
+            "    text-background-mode: plain;\n" +
+            "}\n" +
+            "\n" +
+            "node.input {\n" +
+            "    fill-color: green;\n" +
+            "}\n" +
+            "\n" +
+            "node.output {\n" +
+            "    fill-color: red;\n" +
+            "}\n" +
+            "\n" +
+            "edge {\n" +
+            "    arrow-shape: arrow;\n" +
+            "    arrow-size: 20px, 4px;\n" +
+            "}";
 }

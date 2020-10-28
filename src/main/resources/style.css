@@ -1,3 +1,6 @@
+/*
+This css is not used by program
+*/
 graph {
     padding: 100px, 100px;
 }
@@ -12,11 +15,11 @@ node {
 }
 
 node.input {
-    fill-color: red;
+    fill-color: green;
 }
 
 node.output {
-    fill-color: green;
+    fill-color: red;
 }
 
 edge {

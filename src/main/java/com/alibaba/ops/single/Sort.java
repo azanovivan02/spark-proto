@@ -2,6 +2,7 @@ package com.alibaba.ops.single;
 
 import com.alibaba.nodes.OutputCollector;
 import com.alibaba.Row;
+import com.alibaba.ops.TerminalAwareOperation;
 
 import java.util.ArrayList;
 import java.util.Comparator;
