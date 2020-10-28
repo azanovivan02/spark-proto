@@ -4,11 +4,11 @@ import com.alibaba.Row;
 import com.alibaba.nodes.OutputCollector;
 import com.alibaba.ops.Operator.Mapper;
 
-public class RetailColumnsMapper implements Mapper {
+public class RetainColumnsMapper implements Mapper {
 
     private final String[] retainedColumns;
 
-    public RetailColumnsMapper(String...retainedColumns) {
+    public RetainColumnsMapper(String...retainedColumns) {
         this.retainedColumns = retainedColumns;
     }
 

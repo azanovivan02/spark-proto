@@ -8,7 +8,7 @@ import com.alibaba.ops.mappers.AddColumnMapper;
 import com.alibaba.ops.mappers.IdentityMapper;
 import com.alibaba.ops.mappers.LambdaMapper;
 import com.alibaba.ops.mappers.Printer;
-import com.alibaba.ops.mappers.RetailColumnsMapper;
+import com.alibaba.ops.mappers.RetainColumnsMapper;
 import com.alibaba.ops.mappers.WordSplitMapper;
 import com.alibaba.ops.reducers.CountReducer;
 import com.alibaba.ops.reducers.FirstNReducer;
@@ -64,7 +64,7 @@ public class TfIdfCase implements TestCase {
                 .join(countIdfGraph, new InnerJoin("Id", "Word"))
                 .join(docCountGraph, new InnerJoin())
                 .then(new AddColumnMapper("TfIdf", TfIdfCase::calculateTfIdf))
-                .then(new RetailColumnsMapper("Id", "Word", "TfIdf"))
+                .then(new RetainColumnsMapper("Id", "Word", "TfIdf"))
                 .then(new Printer("^^^ final: "));
 
         return asList(

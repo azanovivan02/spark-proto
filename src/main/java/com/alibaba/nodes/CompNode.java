@@ -22,17 +22,7 @@ public class CompNode {
     public CompNode(Operator operator) {
         this.operator = operator;
         this.connections = new ArrayList<>();
-        this.opType = getOpType(operator);
-    }
-
-    private static Operator.OpType getOpType(Operator operator) {
-        if (operator instanceof Mapper) {
-            return MAPPER;
-        } else if (operator instanceof Reducer) {
-            return REDUCER;
-        } else {
-            return JOINER;
-        }
+        this.opType = calculateOpType(operator);
     }
 
     public Operator getOperator() {
@@ -41,6 +31,10 @@ public class CompNode {
 
     public List<Connection> getConnections() {
         return connections;
+    }
+
+    public Operator.OpType getOpType() {
+        return opType;
     }
 
     public void addConnection(CompNode node, int gate) {
@@ -92,6 +86,16 @@ public class CompNode {
             CompNode node = info.getNode();
             int gateNumber = info.getGate();
             node.push(row, gateNumber);
+        }
+    }
+
+    private static Operator.OpType calculateOpType(Operator operator) {
+        if (operator instanceof Mapper) {
+            return MAPPER;
+        } else if (operator instanceof Reducer) {
+            return REDUCER;
+        } else {
+            return JOINER;
         }
     }
 }

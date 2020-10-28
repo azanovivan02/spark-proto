@@ -7,12 +7,16 @@ graph {
 
 node {
     size: 15px;
-    fill-color: black;
     text-alignment: at-right;
     text-offset: 30, 30;
     text-size: 30;
     text-background-mode: plain;
+    fill-color: #DEE;
+    size: 15px;
+    stroke-mode: plain;
+    stroke-color: #555;
 }
+
 
 node.input {
     fill-color: green;
@@ -20,6 +24,14 @@ node.input {
 
 node.output {
     fill-color: red;
+}
+
+node.reducer {
+    fill-color: blue;
+}
+
+node.joiner {
+    fill-color: orange;
 }
 
 edge {
