@@ -1,4 +1,6 @@
 package com.alibaba.ops.single;
 
-public interface TerminalAwareOperation extends SingleInputOperation {
+import com.alibaba.ops.Operation;
+
+public interface TerminalAwareOperation extends Operation {
 }

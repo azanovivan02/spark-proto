@@ -3,7 +3,7 @@ package com.alibaba.nodes;
 import com.alibaba.Row;
 import com.alibaba.ops.DoubleInputOperation;
 import com.alibaba.ops.OpType;
-import com.alibaba.ops.single.SingleInputOperation;
+import com.alibaba.ops.Operation;
 import com.alibaba.ops.single.TerminalAwareOperation;
 
 import java.util.ArrayList;
@@ -15,17 +15,17 @@ import static com.alibaba.ops.OpType.TERMINAL_AWARE;
 
 public class SparkNode {
 
-    private final SingleInputOperation operation;
+    private final Operation operation;
     private final OpType opType;
     private final List<NodeGateInfo> nextNodes;
 
-    public SparkNode(SingleInputOperation operation) {
+    public SparkNode(Operation operation) {
         this.operation = operation;
         this.nextNodes = new ArrayList<>();
         this.opType = getOpType(operation);
     }
 
-    private static OpType getOpType(SingleInputOperation operation) {
+    private static OpType getOpType(Operation operation) {
         if (operation instanceof DoubleInputOperation) {
             return DOUBLE_INPUT;
         } else if (operation instanceof TerminalAwareOperation) {
@@ -35,7 +35,7 @@ public class SparkNode {
         }
     }
 
-    public SingleInputOperation getOperation() {
+    public Operation getOperation() {
         return operation;
     }
 
@@ -61,11 +61,11 @@ public class SparkNode {
                 DoubleInputOperation doubleInputOperation = (DoubleInputOperation) this.operation;
                 switch (gateNumber) {
                     case 0: {
-                        doubleInputOperation.applyLeft(inputRow, this::collect);
+                        doubleInputOperation.apply(inputRow, this::collect);
                         break;
                     }
                     case 1: {
-                        doubleInputOperation.applyRight(inputRow, this::collect);
+                        doubleInputOperation.applySecond(inputRow, this::collect);
                         break;
                     }
                     default: {
@@ -74,6 +74,10 @@ public class SparkNode {
                 }
             }
         }
+    }
+
+    public final void pushIntoZero(Row inputRow) {
+        push(inputRow, 0);
     }
 
     private void collect(Row row) {

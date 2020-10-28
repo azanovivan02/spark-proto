@@ -12,9 +12,12 @@ import static com.alibaba.ui.GraphVisualizer.visualizeGraph;
 public class Main {
 
     public static void main(String[] args) {
-//        processBaseCase();
-//        processCaseDocument();
-//        processJoinCase();
+        System.out.println("=============");
+        processBaseCase();
+        System.out.println("=============");
+        processCaseDocument();
+        System.out.println("=============");
+        processJoinCase();
 
         SparkNode baseCaseGraph = createBaseCaseGraph();
         visualizeGraph(baseCaseGraph);

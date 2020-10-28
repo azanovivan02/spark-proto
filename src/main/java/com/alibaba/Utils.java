@@ -1,8 +1,6 @@
 package com.alibaba;
 
-import com.alibaba.nodes.NodeGateInfo;
 import com.alibaba.nodes.SparkNode;
-import com.alibaba.ops.single.SingleInputOperation;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,69 +34,10 @@ public class Utils {
         return outputRows;
     }
 
-    public static SparkNode chainOperations(SingleInputOperation...operations) {
-        switch (operations.length) {
-            case 0: {
-                return null;
-            }
-            case 1: {
-                return new SparkNode(operations[0]);
-            }
+    public static void pushAllThenTerminal(SparkNode node, List<Row> rows) {
+        for (Row row : rows) {
+            node.pushIntoZero(row);
         }
-
-        SparkNode firstNode = new SparkNode(operations[0]);
-        SparkNode previousNode = firstNode;
-        for (int operationIndex = 1; operationIndex < operations.length; operationIndex++) {
-            SingleInputOperation currentOperation = operations[operationIndex];
-            SparkNode currentNode = new SparkNode(currentOperation);
-            previousNode
-                    .getNextNodes()
-                    .add(new NodeGateInfo(currentNode, 0));
-            previousNode = currentNode;
-        }
-
-        return firstNode;
-    }
-
-    public static SparkNode appendOperations(SparkNode node, SingleInputOperation...operations) {
-        if (operations.length == 0) {
-            return node;
-        }
-
-        SparkNode firstNode = node;
-        SparkNode previousNode = firstNode;
-        for (int operationIndex = 0; operationIndex < operations.length; operationIndex++) {
-            SingleInputOperation currentOperation = operations[operationIndex];
-            SparkNode currentNode = new SparkNode(currentOperation);
-            previousNode
-                    .getNextNodes()
-                    .add(new NodeGateInfo(currentNode, 0));
-            previousNode = currentNode;
-        }
-
-        return firstNode;
-    }
-
-    public static SparkNode getLastNode(SparkNode firstNode) {
-        if (firstNode == null) {
-            return null;
-        }
-
-        SparkNode currentNode = firstNode;
-        while (true) {
-            List<NodeGateInfo> nextNodes = currentNode.getNextNodes();
-            switch (nextNodes.size()) {
-                case 0: {
-                    return currentNode;
-                }
-                case 1: {
-                    currentNode = nextNodes.get(0).getNode();
-                    break;
-                }
-                default: {
-                    throw new IllegalStateException("Only single next node is accepted, but got: "+nextNodes);
-                }
-            }
-        }
+        node.pushIntoZero(Row.terminalRow());
     }
 }

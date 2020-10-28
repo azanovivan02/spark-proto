@@ -1,5 +1,6 @@
 package com.alibaba.cases;
 
+import com.alibaba.GraphBuilder;
 import com.alibaba.Row;
 import com.alibaba.nodes.SparkNode;
 import com.alibaba.ops.single.Count;
@@ -9,24 +10,21 @@ import com.alibaba.ops.single.WordSplitMap;
 
 import java.util.List;
 
-import static com.alibaba.Utils.chainOperations;
 import static com.alibaba.Utils.convertToRows;
+import static com.alibaba.Utils.pushAllThenTerminal;
 import static com.alibaba.ops.single.Sort.Order.ASCENDING;
 
 public class TableCase {
 
     public static void processCaseDocument() {
-        SparkNode graph = chainOperations(
-                new WordSplitMap("Text", "Word"),
-                new Sort(ASCENDING, "Author", "Word"),
-                new Count("Author", "Word"),
-                new Print("+++ ")
-        );
+        SparkNode startNode = GraphBuilder
+                .startWith(new WordSplitMap("Text", "Word"))
+                .then(new Sort(ASCENDING, "Author", "Word"))
+                .then(new Count("Author", "Word"))
+                .then(new Print("+++ "))
+                .getStartNode();
 
-        for (Row row : inputRows) {
-            graph.push(row, 0);
-        }
-        graph.push(Row.terminalRow(), 0);
+        pushAllThenTerminal(startNode, inputRows);
     }
 
     private static final List<Row> inputRows = convertToRows(

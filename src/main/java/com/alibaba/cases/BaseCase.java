@@ -1,5 +1,6 @@
 package com.alibaba.cases;
 
+import com.alibaba.GraphBuilder;
 import com.alibaba.Row;
 import com.alibaba.nodes.SparkNode;
 import com.alibaba.ops.single.Count;
@@ -11,10 +12,8 @@ import com.alibaba.ops.single.WordSplitMap;
 
 import java.util.List;
 
-import static com.alibaba.Utils.appendOperations;
-import static com.alibaba.Utils.chainOperations;
 import static com.alibaba.Utils.convertToRows;
-import static com.alibaba.Utils.getLastNode;
+import static com.alibaba.Utils.pushAllThenTerminal;
 import static com.alibaba.ops.single.Sort.Order.ASCENDING;
 import static com.alibaba.ops.single.Sort.Order.DESCENDING;
 import static java.util.Arrays.asList;
@@ -25,37 +24,31 @@ public class BaseCase {
         SparkNode headGraphNode = createBaseCaseGraph();
 
         List<Row> inputRows = convertToRows("Doc", INPUT_VALUES);
-        for (Row row : inputRows) {
-            headGraphNode.push(row, 0);
-        }
-        headGraphNode.push(Row.terminalRow(), 0);
+
+        pushAllThenTerminal(headGraphNode, inputRows);
     }
 
     public static SparkNode createBaseCaseGraph() {
-        SparkNode headGraphNode = chainOperations(
-                new WordSplitMap("Doc", "Word"),
-                new LambdaMap<String, String>("Word", String::toLowerCase),
-                new LambdaMap<String, String>("Word", w -> w.replaceAll("[\\.\\'\\,\\!]", "")),
-                new Sort(ASCENDING, "Word"),
-                new Count("Word")
-        );
+        GraphBuilder graphBuilder = GraphBuilder
+                .startWith(new WordSplitMap("Doc", "Word"))
+                .then(new LambdaMap<String, String>("Word", String::toLowerCase))
+                .then(new LambdaMap<String, String>("Word", w -> w.replaceAll("[\\.\\'\\,\\!]", "")))
+                .then(new Sort(ASCENDING, "Word"))
+                .then(new Count("Word"));
 
-        SparkNode splitGraphNode = getLastNode(headGraphNode);
-        appendOperations(
-                splitGraphNode,
-                new Sort(DESCENDING, "Count"),
-                new FirstNReduce(5),
-                new Print("+++ Top 5 common words")
-        );
+        graphBuilder
+                .branch()
+                .then(new Sort(DESCENDING, "Count"))
+                .then(new FirstNReduce(5))
+                .then(new Print("+++ Top 5 common words"));
 
-        appendOperations(
-                splitGraphNode,
-                new Sort(ASCENDING, "Count"),
-                new FirstNReduce(10),
-                new Print("--- Top 10 rare words")
-        );
+        graphBuilder
+                .branch()
+                .then(new Sort(ASCENDING, "Count"))
+                .then(new FirstNReduce(10))
+                .then(new Print("--- Top 10 rare words"));
 
-        return headGraphNode;
+        return graphBuilder.getStartNode();
     }
 
     private static final List<String> INPUT_VALUES = asList(

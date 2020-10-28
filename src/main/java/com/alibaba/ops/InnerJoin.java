@@ -18,17 +18,12 @@ public class InnerJoin implements DoubleInputOperation {
 
     @Override
     public void apply(Row inputRow, OutputCollector collector) {
-        throw new IllegalStateException("Not implemented");
-    }
-
-    @Override
-    public void applyLeft(Row inputRow, OutputCollector collector) {
         leftRows.add(inputRow);
         outputJoinedRowsIfPossible(collector);
     }
 
     @Override
-    public void applyRight(Row inputRow, OutputCollector collector) {
+    public void applySecond(Row inputRow, OutputCollector collector) {
         rightRows.add(inputRow);
         outputJoinedRowsIfPossible(collector);
     }
@@ -49,7 +44,7 @@ public class InnerJoin implements DoubleInputOperation {
                 int comparisonResult = compareRows(leftRow, rightRow, keyColumn);
                 if (comparisonResult == 0) {
                     Row joinedRow = leftRow.copy().setAll(rightRow.getValues());
-                    collector.push(joinedRow);
+                    collector.collect(joinedRow);
                 }
             }
         }

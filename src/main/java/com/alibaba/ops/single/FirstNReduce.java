@@ -2,8 +2,9 @@ package com.alibaba.ops.single;
 
 import com.alibaba.nodes.OutputCollector;
 import com.alibaba.Row;
+import com.alibaba.ops.Operation;
 
-public class FirstNReduce implements SingleInputOperation {
+public class FirstNReduce implements Operation {
 
     private final int maxAmount;
     private int currentAmount = 0;
@@ -15,9 +16,9 @@ public class FirstNReduce implements SingleInputOperation {
     @Override
     public void apply(Row inputRow, OutputCollector collector) {
         if (currentAmount < maxAmount) {
-            collector.push(inputRow);
+            collector.collect(inputRow);
         } else if (currentAmount == maxAmount) {
-            collector.push(Row.terminalRow());
+            collector.collect(Row.terminalRow());
         }
         currentAmount++;
     }

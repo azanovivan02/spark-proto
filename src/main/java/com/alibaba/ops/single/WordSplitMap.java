@@ -2,8 +2,9 @@ package com.alibaba.ops.single;
 
 import com.alibaba.nodes.OutputCollector;
 import com.alibaba.Row;
+import com.alibaba.ops.Operation;
 
-public class WordSplitMap implements SingleInputOperation {
+public class WordSplitMap implements Operation {
 
     private String inputColumn;
     private String outputColumn;
@@ -24,7 +25,7 @@ public class WordSplitMap implements SingleInputOperation {
             Row newRow = inputRow
                     .copyColumnsExcept(inputColumn)
                     .set(outputColumn, word);
-            collector.push(newRow);
+            collector.collect(newRow);
         }
     }
 }

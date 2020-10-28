@@ -1,47 +1,35 @@
 package com.alibaba.cases;
 
+import com.alibaba.GraphBuilder;
 import com.alibaba.Row;
-import com.alibaba.nodes.NodeGateInfo;
+import com.alibaba.Utils;
 import com.alibaba.nodes.SparkNode;
 import com.alibaba.ops.InnerJoin;
 import com.alibaba.ops.single.Print;
 
 import java.util.List;
 
-import static com.alibaba.Utils.chainOperations;
 import static com.alibaba.Utils.convertToRows;
-import static com.alibaba.Utils.getLastNode;
+import static com.alibaba.Utils.pushAllThenTerminal;
 
 public class JoinCase {
 
     public static void processJoinCase() {
-        SparkNode leftGraph = chainOperations(
-                new Print("+++ left: ")
-        );
-        SparkNode rightGraph = chainOperations(
-                new Print("--- right: ")
-        );
+        GraphBuilder rightGraphBuilder = GraphBuilder
+                .startWith(new Print("--- right: "));
 
-        SparkNode joinNode = new SparkNode(new InnerJoin("AuthorId"));
-        getLastNode(leftGraph).getNextNodes().add(new NodeGateInfo(joinNode, 0));
-        getLastNode(rightGraph).getNextNodes().add(new NodeGateInfo(joinNode, 1));
+        GraphBuilder leftGraphBuilder = GraphBuilder
+                .startWith(new Print("+++ left: "))
+                .join(rightGraphBuilder, new InnerJoin("AuthorId"))
+                .then(new Print("*** output: "));
 
-        joinNode.getNextNodes().add(
-                new NodeGateInfo(
-                        new SparkNode(new Print("*** output: ")),
-                        0
-                )
-        );
+        SparkNode leftStartNode = leftGraphBuilder
+                .getStartNode();
+        SparkNode rightStartNode = rightGraphBuilder
+                .getStartNode();
 
-        for (Row leftRow : leftRows) {
-            leftGraph.push(leftRow, 0);
-        }
-        leftGraph.push(Row.terminalRow(), 0);
-
-        for (Row rightRow : rightRows) {
-            rightGraph.push(rightRow, 0);
-        }
-        rightGraph.push(Row.terminalRow(), 0);
+        pushAllThenTerminal(leftStartNode, leftRows);
+        pushAllThenTerminal(rightStartNode, rightRows);
     }
 
 

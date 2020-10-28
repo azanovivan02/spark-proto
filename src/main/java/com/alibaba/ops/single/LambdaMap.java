@@ -2,10 +2,11 @@ package com.alibaba.ops.single;
 
 import com.alibaba.nodes.OutputCollector;
 import com.alibaba.Row;
+import com.alibaba.ops.Operation;
 
 import java.util.function.Function;
 
-public class LambdaMap<I, O> implements SingleInputOperation {
+public class LambdaMap<I, O> implements Operation {
 
     private final Function<I, O> lambda;
     private String column;
@@ -23,6 +24,6 @@ public class LambdaMap<I, O> implements SingleInputOperation {
         Row outputRow = inputRow
                 .copy()
                 .set(column, outputValue);
-        collector.push(outputRow);
+        collector.collect(outputRow);
     }
 }

@@ -54,9 +54,9 @@ public class Sort implements TerminalAwareOperation {
 
         sort(accumulatedRows, rowComparator);
         for (Row row : accumulatedRows) {
-            collector.push(row);
+            collector.collect(row);
         }
-        collector.push(Row.terminalRow());
+        collector.collect(Row.terminalRow());
     }
 
     public enum Order {

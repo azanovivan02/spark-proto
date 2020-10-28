@@ -2,8 +2,9 @@ package com.alibaba.ops.single;
 
 import com.alibaba.nodes.OutputCollector;
 import com.alibaba.Row;
+import com.alibaba.ops.Operation;
 
-public class Print implements SingleInputOperation {
+public class Print implements Operation {
 
     private final String prefix;
 
@@ -14,6 +15,6 @@ public class Print implements SingleInputOperation {
     @Override
     public void apply(Row inputRow, OutputCollector collector) {
         System.out.printf("%s: %s%n", prefix, inputRow);
-        collector.push(inputRow);
+        collector.collect(inputRow);
     }
 }

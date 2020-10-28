@@ -20,11 +20,11 @@ public class Count implements TerminalAwareOperation {
             if (currentRow != null) {
                 Row newRow = currentRow.copyColumns(groupByColumns);
                 newRow.set("Count", currentCount);
-                collector.push(newRow);
+                collector.collect(newRow);
             }
 
             currentRow = null;
-            collector.push(inputRow);
+            collector.collect(inputRow);
             return;
         }
 
@@ -32,7 +32,7 @@ public class Count implements TerminalAwareOperation {
             if (currentRow != null) {
                 Row newRow = currentRow.copyColumns(groupByColumns);
                 newRow.set("Count", currentCount);
-                collector.push(newRow);
+                collector.collect(newRow);
             }
             currentCount = 1;
             currentRow = inputRow;

@@ -2,7 +2,7 @@ package com.alibaba.ui;
 
 import com.alibaba.nodes.NodeGateInfo;
 import com.alibaba.nodes.SparkNode;
-import com.alibaba.ops.single.SingleInputOperation;
+import com.alibaba.ops.Operation;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
@@ -24,7 +24,7 @@ public class GraphVisualizer {
     }
 
     private static void visit(SparkNode node, Graph visualGraph, Node previousVisualNode) {
-        SingleInputOperation operation = node.getOperation();
+        Operation operation = node.getOperation();
 
         if (operation == null) {
             throw new IllegalStateException("No operation");
