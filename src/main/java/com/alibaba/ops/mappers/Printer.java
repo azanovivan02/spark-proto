@@ -1,14 +1,14 @@
-package com.alibaba.ops.single;
+package com.alibaba.ops.mappers;
 
-import com.alibaba.nodes.OutputCollector;
 import com.alibaba.Row;
-import com.alibaba.ops.Operation;
+import com.alibaba.nodes.OutputCollector;
+import com.alibaba.ops.Operator;
 
-public class Print implements Operation {
+public class Printer implements Operator.Mapper {
 
     private final String prefix;
 
-    public Print(String prefix) {
+    public Printer(String prefix) {
         this.prefix = prefix;
     }
 

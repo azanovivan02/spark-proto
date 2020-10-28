@@ -4,7 +4,7 @@ import com.alibaba.GraphBuilder;
 import com.alibaba.Row;
 import com.alibaba.nodes.CompNode;
 import com.alibaba.ops.InnerJoin;
-import com.alibaba.ops.single.Print;
+import com.alibaba.ops.mappers.Printer;
 
 import java.util.List;
 
@@ -28,12 +28,12 @@ public class JoinCase implements TestCase {
     @Override
     public List<CompNode> createGraph() {
         GraphBuilder rightGraphBuilder = GraphBuilder
-                .startWith(new Print("--- right: "));
+                .startWith(new Printer("--- right: "));
 
         GraphBuilder leftGraphBuilder = GraphBuilder
-                .startWith(new Print("+++ left: "))
+                .startWith(new Printer("+++ left: "))
                 .join(rightGraphBuilder, new InnerJoin("AuthorId"))
-                .then(new Print("*** output: "));
+                .then(new Printer("*** output: "));
 
         return asList(
                 leftGraphBuilder.getStartNode(),

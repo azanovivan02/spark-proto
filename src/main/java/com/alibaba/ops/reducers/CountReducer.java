@@ -1,11 +1,11 @@
-package com.alibaba.ops.single;
+package com.alibaba.ops.reducers;
 
-import com.alibaba.nodes.OutputCollector;
 import com.alibaba.Row;
+import com.alibaba.nodes.OutputCollector;
 import com.alibaba.ops.OpUtils;
-import com.alibaba.ops.TerminalAwareOperation;
+import com.alibaba.ops.Operator;
 
-public class Count implements TerminalAwareOperation {
+public class CountReducer implements Operator.Reducer {
 
     private String outputCountColumn;
     private final String[] groupByColumns;
@@ -13,7 +13,7 @@ public class Count implements TerminalAwareOperation {
     Row currentRow = null;
     int currentCount = 0;
 
-    public Count(String outputCountColumn, String... groupByColumns) {
+    public CountReducer(String outputCountColumn, String... groupByColumns) {
         this.outputCountColumn = outputCountColumn;
         this.groupByColumns = groupByColumns;
     }

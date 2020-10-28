@@ -1,8 +1,9 @@
-package com.alibaba.ops.single;
+package com.alibaba.ops.reducers;
 
-import com.alibaba.nodes.OutputCollector;
 import com.alibaba.Row;
-import com.alibaba.ops.TerminalAwareOperation;
+import com.alibaba.nodes.OutputCollector;
+import com.alibaba.ops.OpUtils;
+import com.alibaba.ops.Operator;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -10,7 +11,7 @@ import java.util.List;
 
 import static java.util.Collections.sort;
 
-public class Sort implements TerminalAwareOperation {
+public class Sorter implements Operator.Reducer {
 
     private final List<Row> accumulatedRows = new ArrayList<>();
 
@@ -18,26 +19,11 @@ public class Sort implements TerminalAwareOperation {
     private final String[] keyColumns;
     private final Comparator<Row> rowComparator;
 
-    public Sort(Order order, String... keyColumns) {
+    public Sorter(Order order, String... keyColumns) {
         this.order = order;
         this.keyColumns = keyColumns;
 
-        Comparator<Row> comparator = new Comparator<Row>() {
-            @Override
-            public int compare(Row o1, Row o2) {
-                for (String column : keyColumns) {
-                    Comparable leftValue = o1.getComparable(column);
-                    Comparable rightValue = o2.getComparable(column);
-                    int comparisonResult = leftValue.compareTo(rightValue);
-                    if (comparisonResult != 0) {
-                        return comparisonResult;
-                    }
-                }
-
-                return 0;
-            }
-
-        };
+        Comparator<Row> comparator = (o1, o2) -> OpUtils.compareRows(o1, o2, keyColumns);
 
         if (order == Order.DESCENDING) {
             this.rowComparator = comparator.reversed();

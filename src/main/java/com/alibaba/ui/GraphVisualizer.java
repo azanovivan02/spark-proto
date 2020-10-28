@@ -2,7 +2,6 @@ package com.alibaba.ui;
 
 import com.alibaba.nodes.CompNode;
 import com.alibaba.nodes.Connection;
-import com.alibaba.ops.Operation;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
@@ -44,17 +43,17 @@ public class GraphVisualizer {
         addEdgeToPreviousNodeIfNeeded(visualGraph, previousVisualNode, currentVisualNode);
         addCssClasses(currentCompNode, previousVisualNode, currentVisualNode);
 
-        for (Connection info : currentCompNode.getNextNodes()) {
+        for (Connection info : currentCompNode.getConnections()) {
             visit(info.getNode(), visualGraph, currentVisualNode, compVisualNodeMapping);
         }
     }
 
     private static Node createVisualNode(CompNode currentCompNode, Graph visualGraph) {
-        Operation operation = currentCompNode.getOperation();
-        if (operation == null) {
-            throw new IllegalStateException("No operation");
+        Object operator = currentCompNode.getOperator();
+        if (operator == null) {
+            throw new IllegalStateException("No operator");
         }
-        String nodeLabel = operation.getClass().getSimpleName();
+        String nodeLabel = operator.getClass().getSimpleName();
         UUID nodeId = UUID.randomUUID();
         Node currentVisualNode = visualGraph.addNode(nodeLabel + nodeId);
         currentVisualNode.setAttribute("ui.label", nodeLabel);
@@ -72,7 +71,7 @@ public class GraphVisualizer {
         if (previousVisualNode == null) {
             currentVisualNode.setAttribute("ui.class", "input");
         }
-        if (currentCompNode.getNextNodes().isEmpty()) {
+        if (currentCompNode.getConnections().isEmpty()) {
             currentVisualNode.setAttribute("ui.class", "output");
         }
     }

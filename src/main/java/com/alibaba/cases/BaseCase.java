@@ -3,19 +3,18 @@ package com.alibaba.cases;
 import com.alibaba.GraphBuilder;
 import com.alibaba.Row;
 import com.alibaba.nodes.CompNode;
-import com.alibaba.ops.single.Count;
-import com.alibaba.ops.single.FirstNReduce;
-import com.alibaba.ops.single.LambdaMap;
-import com.alibaba.ops.single.Print;
-import com.alibaba.ops.single.Sort;
-import com.alibaba.ops.single.WordSplitMap;
+import com.alibaba.ops.mappers.LambdaMapper;
+import com.alibaba.ops.mappers.Printer;
+import com.alibaba.ops.mappers.WordSplitMapper;
+import com.alibaba.ops.reducers.CountReducer;
+import com.alibaba.ops.reducers.FirstNReducer;
 
 import java.util.List;
 
 import static com.alibaba.Utils.convertToRows;
 import static com.alibaba.Utils.pushAllThenTerminal;
-import static com.alibaba.ops.single.Sort.Order.ASCENDING;
-import static com.alibaba.ops.single.Sort.Order.DESCENDING;
+import static com.alibaba.ops.reducers.Sorter.Order.ASCENDING;
+import static com.alibaba.ops.reducers.Sorter.Order.DESCENDING;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
@@ -33,22 +32,22 @@ public class BaseCase implements TestCase {
     @Override
     public List<CompNode> createGraph() {
         GraphBuilder graphBuilder = GraphBuilder
-                .startWith(new WordSplitMap("Doc", "Word"))
-                .then(new LambdaMap<String, String>("Word", String::toLowerCase))
-                .then(new Sort(ASCENDING, "Word"))
-                .then(new Count("Word"));
+                .startWith(new WordSplitMapper("Doc", "Word"))
+                .then(new LambdaMapper<String>("Word", String::toLowerCase))
+                .sortBy(ASCENDING, "Word")
+                .then(new CountReducer("WordCount", "Word"));
 
         graphBuilder
                 .branch()
-                .then(new Sort(DESCENDING, "Count"))
-                .then(new FirstNReduce(5))
-                .then(new Print("+++ Top 5 common words"));
+                .sortBy(DESCENDING, "WordCount")
+                .then(new FirstNReducer(5))
+                .then(new Printer("+++ Top 5 common words"));
 
         graphBuilder
                 .branch()
-                .then(new Sort(ASCENDING, "Count"))
-                .then(new FirstNReduce(10))
-                .then(new Print("--- Top 10 rare words"));
+                .sortBy(ASCENDING, "WordCount")
+                .then(new FirstNReducer(10))
+                .then(new Printer("--- Top 10 rare words"));
 
         return singletonList(
                 graphBuilder.getStartNode()

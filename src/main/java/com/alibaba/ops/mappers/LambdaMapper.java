@@ -1,17 +1,17 @@
-package com.alibaba.ops.single;
+package com.alibaba.ops.mappers;
 
-import com.alibaba.nodes.OutputCollector;
 import com.alibaba.Row;
-import com.alibaba.ops.Operation;
+import com.alibaba.nodes.OutputCollector;
+import com.alibaba.ops.Operator;
 
 import java.util.function.Function;
 
-public class LambdaMap<I, O> implements Operation {
+public class LambdaMapper<I> implements Operator.Mapper {
 
-    private final Function<I, O> lambda;
+    private final Function<I, ?> lambda;
     private String column;
 
-    public LambdaMap(String column, Function<I, O> lambda) {
+    public LambdaMapper(String column, Function<I, ?> lambda) {
         this.lambda = lambda;
         this.column = column;
     }
@@ -19,7 +19,7 @@ public class LambdaMap<I, O> implements Operation {
     @Override
     public void apply(Row inputRow, OutputCollector collector) {
         I inputValue = (I) inputRow.get(column);
-        O outputValue = lambda.apply(inputValue);
+        Object outputValue = lambda.apply(inputValue);
 
         Row outputRow = inputRow
                 .copy()

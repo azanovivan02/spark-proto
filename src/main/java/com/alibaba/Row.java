@@ -1,11 +1,7 @@
 package com.alibaba;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -27,7 +23,12 @@ public class Row {
     }
 
     public String getString(String columnName) {
-        return (String) get(columnName);
+        return get(columnName).toString();
+    }
+
+    public double getDouble(String columnName) {
+        String stringValue = getString(columnName);
+        return Double.parseDouble(stringValue);
     }
 
     public Comparable getComparable(String columnName) {

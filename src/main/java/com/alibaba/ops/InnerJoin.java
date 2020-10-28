@@ -5,25 +5,27 @@ import com.alibaba.nodes.OutputCollector;
 
 import java.util.LinkedList;
 
-public class InnerJoin implements DoubleInputOperation {
+import static com.alibaba.ops.OpUtils.compareRows;
+
+public class InnerJoin implements Operator.Joiner {
 
     LinkedList<Row> leftRows = new LinkedList<>();
     LinkedList<Row> rightRows = new LinkedList<>();
 
-    private final String keyColumn;
+    private final String[] keyColumns;
 
-    public InnerJoin(String keyColumn) {
-        this.keyColumn = keyColumn;
+    public InnerJoin(String... keyColumns) {
+        this.keyColumns = keyColumns;
     }
 
     @Override
-    public void apply(Row inputRow, OutputCollector collector) {
+    public void applyLeft(Row inputRow, OutputCollector collector) {
         leftRows.add(inputRow);
         outputJoinedRowsIfPossible(collector);
     }
 
     @Override
-    public void applySecond(Row inputRow, OutputCollector collector) {
+    public void applyRight(Row inputRow, OutputCollector collector) {
         rightRows.add(inputRow);
         outputJoinedRowsIfPossible(collector);
     }
@@ -41,7 +43,7 @@ public class InnerJoin implements DoubleInputOperation {
 
         for (Row rightRow : rightRows) {
             for (Row leftRow : leftRows) {
-                int comparisonResult = compareRows(leftRow, rightRow, keyColumn);
+                int comparisonResult = compareRows(leftRow, rightRow, keyColumns);
                 if (comparisonResult == 0) {
                     Row joinedRow = leftRow.copy().setAll(rightRow.getValues());
                     collector.collect(joinedRow);
@@ -51,9 +53,4 @@ public class InnerJoin implements DoubleInputOperation {
         collector.collect(Row.terminalRow());
     }
 
-    private int compareRows(Row leftRow, Row rightRow, String keyColumn) {
-        Comparable leftValue = leftRow.getComparable(keyColumn);
-        Comparable rightValue = rightRow.getComparable(keyColumn);
-        return leftValue.compareTo(rightValue);
-    }
 }

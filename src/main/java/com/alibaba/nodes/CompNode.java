@@ -1,76 +1,78 @@
 package com.alibaba.nodes;
 
 import com.alibaba.Row;
-import com.alibaba.ops.DoubleInputOperation;
-import com.alibaba.ops.OpType;
-import com.alibaba.ops.Operation;
-import com.alibaba.ops.TerminalAwareOperation;
+import com.alibaba.ops.Operator;
+import com.alibaba.ops.Operator.Joiner;
+import com.alibaba.ops.Operator.Mapper;
+import com.alibaba.ops.Operator.Reducer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.alibaba.ops.OpType.DOUBLE_INPUT;
-import static com.alibaba.ops.OpType.SINGLE_INPUT;
-import static com.alibaba.ops.OpType.TERMINAL_AWARE;
+import static com.alibaba.ops.Operator.OpType.JOINER;
+import static com.alibaba.ops.Operator.OpType.MAPPER;
+import static com.alibaba.ops.Operator.OpType.REDUCER;
 
 public class CompNode {
 
-    private final Operation operation;
-    private final OpType opType;
-    private final List<Connection> nextNodes;
+    private final Operator operator;
+    private final Operator.OpType opType;
+    private final List<Connection> connections;
 
-    public CompNode(Operation operation) {
-        this.operation = operation;
-        this.nextNodes = new ArrayList<>();
-        this.opType = getOpType(operation);
+    public CompNode(Operator operator) {
+        this.operator = operator;
+        this.connections = new ArrayList<>();
+        this.opType = getOpType(operator);
     }
 
-    private static OpType getOpType(Operation operation) {
-        if (operation instanceof DoubleInputOperation) {
-            return DOUBLE_INPUT;
-        } else if (operation instanceof TerminalAwareOperation) {
-            return TERMINAL_AWARE;
+    private static Operator.OpType getOpType(Operator operator) {
+        if (operator instanceof Mapper) {
+            return MAPPER;
+        } else if (operator instanceof Reducer) {
+            return REDUCER;
         } else {
-            return SINGLE_INPUT;
+            return JOINER;
         }
     }
 
-    public Operation getOperation() {
-        return operation;
+    public Operator getOperator() {
+        return operator;
     }
 
-    public List<Connection> getNextNodes() {
-        return nextNodes;
+    public List<Connection> getConnections() {
+        return connections;
     }
 
     public void addConnection(CompNode node, int gate) {
         Connection connection = new Connection(node, gate);
-        nextNodes.add(connection);
+        connections.add(connection);
     }
 
     public void push(Row inputRow, int gateNumber) {
         switch (opType) {
-            case SINGLE_INPUT: {
+            case MAPPER: {
+                Mapper mapper = (Mapper) operator;
                 if (!inputRow.isTerminal()) {
-                    operation.apply(inputRow, this::collect);
+                    mapper.apply(inputRow, this::collect);
                 } else {
                     collect(inputRow);
                 }
                 break;
             }
-            case TERMINAL_AWARE: {
-                operation.apply(inputRow, this::collect);
+            case REDUCER: {
+                Reducer reducer = (Reducer) operator;
+                reducer.apply(inputRow, this::collect);
                 break;
             }
-            case DOUBLE_INPUT: {
-                DoubleInputOperation doubleInputOperation = (DoubleInputOperation) this.operation;
+            case JOINER: {
+                Joiner joiner = (Joiner) this.operator;
                 switch (gateNumber) {
                     case 0: {
-                        doubleInputOperation.apply(inputRow, this::collect);
+                        joiner.applyLeft(inputRow, this::collect);
                         break;
                     }
                     case 1: {
-                        doubleInputOperation.applySecond(inputRow, this::collect);
+                        joiner.applyRight(inputRow, this::collect);
                         break;
                     }
                     default: {
@@ -86,7 +88,7 @@ public class CompNode {
     }
 
     private void collect(Row row) {
-        for (Connection info : nextNodes) {
+        for (Connection info : connections) {
             CompNode node = info.getNode();
             int gateNumber = info.getGate();
             node.push(row, gateNumber);

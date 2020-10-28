@@ -3,16 +3,15 @@ package com.alibaba.cases;
 import com.alibaba.GraphBuilder;
 import com.alibaba.Row;
 import com.alibaba.nodes.CompNode;
-import com.alibaba.ops.single.Count;
-import com.alibaba.ops.single.Print;
-import com.alibaba.ops.single.Sort;
-import com.alibaba.ops.single.WordSplitMap;
+import com.alibaba.ops.mappers.Printer;
+import com.alibaba.ops.mappers.WordSplitMapper;
+import com.alibaba.ops.reducers.CountReducer;
 
 import java.util.List;
 
 import static com.alibaba.Utils.convertToRows;
 import static com.alibaba.Utils.pushAllThenTerminal;
-import static com.alibaba.ops.single.Sort.Order.ASCENDING;
+import static com.alibaba.ops.reducers.Sorter.Order.ASCENDING;
 import static java.util.Collections.singletonList;
 
 public class TableCase implements TestCase {
@@ -26,10 +25,10 @@ public class TableCase implements TestCase {
     @Override
     public List<CompNode> createGraph() {
         CompNode startNode = GraphBuilder
-                .startWith(new WordSplitMap("Text", "Word"))
-                .then(new Sort(ASCENDING, "Author", "Word"))
-                .then(new Count("Author", "Word"))
-                .then(new Print("+++ "))
+                .startWith(new WordSplitMapper("Text", "Word"))
+                .sortBy(ASCENDING, "Author", "Word")
+                .then(new CountReducer("Count", "Author", "Word"))
+                .then(new Printer("+++ "))
                 .getStartNode();
 
         return singletonList(startNode);

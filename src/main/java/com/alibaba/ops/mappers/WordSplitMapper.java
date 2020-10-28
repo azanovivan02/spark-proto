@@ -1,15 +1,15 @@
-package com.alibaba.ops.single;
+package com.alibaba.ops.mappers;
 
-import com.alibaba.nodes.OutputCollector;
 import com.alibaba.Row;
-import com.alibaba.ops.Operation;
+import com.alibaba.nodes.OutputCollector;
+import com.alibaba.ops.Operator;
 
-public class WordSplitMap implements Operation {
+public class WordSplitMapper implements Operator.Mapper {
 
     private String inputColumn;
     private String outputColumn;
 
-    public WordSplitMap(String inputColumn, String outputColumn) {
+    public WordSplitMapper(String inputColumn, String outputColumn) {
         this.inputColumn = inputColumn;
         this.outputColumn = outputColumn;
     }

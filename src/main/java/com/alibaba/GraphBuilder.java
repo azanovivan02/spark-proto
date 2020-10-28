@@ -1,7 +1,9 @@
 package com.alibaba;
 
 import com.alibaba.nodes.CompNode;
-import com.alibaba.ops.Operation;
+import com.alibaba.ops.Operator;
+import com.alibaba.ops.reducers.Sorter;
+import com.alibaba.ops.reducers.Sorter.Order;
 
 public class GraphBuilder {
 
@@ -12,8 +14,8 @@ public class GraphBuilder {
         return graphBuilder;
     }
 
-    public static GraphBuilder startWith(Operation operation) {
-        return startWith(new CompNode(operation));
+    public static GraphBuilder startWith(Operator operator) {
+        return startWith(new CompNode(operator));
     }
 
     private CompNode startNode;
@@ -35,23 +37,24 @@ public class GraphBuilder {
         return endNode;
     }
 
-    public GraphBuilder then(CompNode newNode) {
+    public GraphBuilder then(Operator operator) {
+        CompNode newNode = new CompNode(operator);
         endNode.addConnection(newNode, 0);
         endNode = newNode;
         return this;
     }
 
-    public GraphBuilder then(Operation operation) {
-        CompNode newNode = new CompNode(operation);
-        return then(newNode);
+    public GraphBuilder sortBy(Order order, String... keyColumns) {
+        Sorter sorter = new Sorter(order, keyColumns);
+        return then(sorter);
     }
 
     public GraphBuilder branch() {
         return new GraphBuilder(startNode, endNode);
     }
 
-    public GraphBuilder join(GraphBuilder rightGraphBuilder, Operation joinOperation) {
-        CompNode joinNode = new CompNode(joinOperation);
+    public GraphBuilder join(GraphBuilder rightGraphBuilder, Operator joinOperator) {
+        CompNode joinNode = new CompNode(joinOperator);
         CompNode leftInputNode = this.endNode;
         CompNode rightInputNode = rightGraphBuilder.endNode;
 
